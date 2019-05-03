@@ -1,0 +1,35 @@
+{
+  "name": "serverlith",
+  "version": "0.0.1",
+  "description": "Library for writing REST APIs in AWS Lambda",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p ./src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/donniemattingly/serverlith.git"
+  },
+  "keywords": [
+    "serverless",
+    "aws-lambda"
+  ],
+  "author": "Donnie Mattingly",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/donniemattingly/serverlith/issues"
+  },
+  "homepage": "https://github.com/donniemattingly/serverlith#readme",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.25",
+    "@types/aws-sdk": "^2.7.0",
+    "@types/lodash": "^4.14.123",
+    "aws-lambda": "^0.1.2",
+    "aws-sdk": "^2.449.0",
+    "lodash": "^4.17.11",
+    "path-to-regexp": "^3.0.0",
+    "reflect-metadata": "^0.1.13"
+  }
+}

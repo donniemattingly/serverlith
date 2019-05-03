@@ -45,11 +45,16 @@ interface Response {
 
 You can use either decorator based or function based routing.
 
+## Routing
+
+Choosing which routing style to use is mostly a personal preference - the decorators are just syntactic sugar
+around the functional approach. Though the functional approach does enforce correct types, the class based approach
+avoids issues caused by `this` being undefined in the handlers if not bound with `Function.prototype.bind`.
 
 #### Decorator Based
 
-You decorate a class with `@Handler` to enable routing for methods in the class, and use one of `@GET, @PUT, 
-@POST, @DELETE, or @OPTIONS` to register that method as a handler for requests to that path.
+You decorate a class with `@Handler` to enable routing for methods in the class, and use one of `@GET`, `@PUT`, 
+`@POST`, `@DELETE`, or `@OPTIONS` to register that method as a handler for requests to that path.
 
 Below we're registering `GET` requests to `/users/:id/` and `POST`s at `/users`
 
@@ -60,13 +65,14 @@ The methods you decorate should take an argument that extends `Request` and retu
 export class UserHandler {
 
     @GET('/:id')
-    public async getUser(request: Request): Promise<Response> {
+    public getUser(request: Request): Response {
         return fail('not implemented');
     }
 
     @POST('')
     public async createUser(request: CreateUserRequest): Promise<Response> {
-        return fail('not implemented');
+        const newUser = await service.createUser(request);
+        return success(newUser);
     }
 }
 
