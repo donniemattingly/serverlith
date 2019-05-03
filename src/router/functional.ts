@@ -19,7 +19,7 @@ const compose = (m1: MatchContext, m2: MatchContext): MatchContext => {
     };
 };
 
-export const nest = (pattern: string, ...routerFunctions: Route[]): Route => {
+export const handle = (pattern: string, ...routerFunctions: Route[]): Route => {
     const context = path(pattern);
     const newFns = routerFunctions.map((fn) => (r: Request, c: MatchContext) => fn(r, compose(context, c)));
     return and(...newFns);

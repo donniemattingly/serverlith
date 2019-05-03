@@ -6,6 +6,9 @@ Serverlith is a TypeScript library for writing REST APIs with AWS Lambda and API
 Serverlith handles conversion and routing of AWS API Gateway events received by your lambda 
 function. 
 
+**Note:** Serverlith is a work in progress and is definitely *not* finished. Please don't use this right now, as
+basically every aspect of the library can change.
+
 
 ## Examples
 

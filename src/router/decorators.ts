@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {HandlerFunction, Route} from './base';
-import {nest, routeMethod} from './functional';
+import {handle, routeMethod} from './functional';
 
 
 const metadataKey = Symbol('serverlith-metadata');
@@ -77,7 +77,7 @@ const classDecoratorFactory = (params: HandlerParams) => {
         const f: any = (...args: any[]) => {
             const result = construct(original, args);
             const routes = getDecoratedRoutes(result);
-            result.routes = [nest(params.path, ...routes)];
+            result.routes = [handle(params.path, ...routes)];
             return result;
         };
 
