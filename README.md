@@ -17,10 +17,7 @@ register your routes with the Serverlith router.
 
 ```typescript
 export const handler = async (event: APIGatewayEvent) => {
-    const routes = [
-        ...routes,
-    ];
-    return await router(...routes)
+    return await router(...handlers)
         .handleEvent(event);
 };
 ```
