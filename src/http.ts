@@ -9,7 +9,7 @@ export const corsHeaders = {
     'Access-Control-Max-Age': 86400,
 };
 
-export const enableCORS: ResponseMiddleware = async (responsePromise: Response | Promise<Response>) => {
+export const enableCORS: ResponseMiddleware = async (responsePromise: ServerlithResponse | Promise<ServerlithResponse>) => {
     const response = await responsePromise;
     return Promise.resolve({
         ...response,
@@ -20,14 +20,14 @@ export const enableCORS: ResponseMiddleware = async (responsePromise: Response |
     });
 };
 
-export const parseBody: RequestMiddleware = (request: Request): Request => {
+export const parseBody: RequestMiddleware = (request: ServerlithRequest): ServerlithRequest => {
     return {
         ...request,
         body: typeof request.body === 'string' ? JSON.parse(request.body) : request.body,
     };
 };
 
-export interface Request {
+export interface ServerlithRequest {
     httpMethod: string;
     body: any;
     queryParams: any;
@@ -35,7 +35,7 @@ export interface Request {
     path: string;
 }
 
-export const dummyRequest: Request = {
+export const dummyRequest: ServerlithRequest = {
     httpMethod: 'GET',
     queryParams: null,
     pathParams: null,
@@ -43,7 +43,7 @@ export const dummyRequest: Request = {
     path: '/'
 };
 
-export interface Response {
+export interface ServerlithResponse {
     statusCode: string;
     body: any;
     headers: {[name: string]: any};
@@ -57,7 +57,7 @@ const respondWith = () => new ResponseBuilder();
  * once/if the pipeline (|>) operator is accepted, this should change.
  */
 class ResponseBuilder {
-    public response: Response = {
+    public response: ServerlithResponse = {
         statusCode: '500',
         body: {},
         headers: {},
@@ -120,7 +120,7 @@ class ResponseBuilder {
 
 }
 
-export const eventToRequest = (event: APIGatewayEvent): Request => {
+export const eventToRequest = (event: APIGatewayEvent): ServerlithRequest => {
     const {body, httpMethod, path, queryStringParameters} = event;
     return {
         body,
@@ -131,7 +131,7 @@ export const eventToRequest = (event: APIGatewayEvent): Request => {
     };
 };
 
-export const responseToApiGatewayResult = async (responsePromise: Response | Promise<Response>): Promise<APIGatewayProxyResult> => {
+export const responseToApiGatewayResult = async (responsePromise: ServerlithResponse | Promise<ServerlithResponse>): Promise<APIGatewayProxyResult> => {
     const response = await responsePromise;
     return Promise.resolve({
         body: JSON.stringify(response.body),
@@ -140,7 +140,7 @@ export const responseToApiGatewayResult = async (responsePromise: Response | Pro
     });
 };
 
-export const fail = (message: string, statusCode = '400'): Response => {
+export const fail = (message: string, statusCode = '400'): ServerlithResponse => {
     const responseBody = {
         message,
     };
@@ -152,7 +152,7 @@ export const fail = (message: string, statusCode = '400'): Response => {
 
 export const notFound = fail('not found', '404');
 
-export const success = (responseBody: object): Response => {
+export const success = (responseBody: object): ServerlithResponse => {
     return respondWith()
         .ok()
         .send(responseBody);

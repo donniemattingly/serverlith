@@ -1,5 +1,5 @@
 import * as _ from 'lodash';
-import {fail, notFound, Request} from './http';
+import {fail, notFound, ServerlithRequest} from './http';
 import {baseContext, HandlerFunction, match, MatchContext, Route, RouterFunction} from './router';
 
 export const route = (context: MatchContext, handler: HandlerFunction): Route => {
@@ -21,7 +21,7 @@ const compose = (m1: MatchContext, m2: MatchContext): MatchContext => {
 
 export const handle = (pattern: string, ...routerFunctions: Route[]): Route => {
     const context = path(pattern);
-    const newFns = routerFunctions.map((fn) => (r: Request, c: MatchContext) => fn(r, compose(context, c)));
+    const newFns = routerFunctions.map((fn) => (r: ServerlithRequest, c: MatchContext) => fn(r, compose(context, c)));
     return and(...newFns);
 };
 
@@ -31,7 +31,7 @@ const noopRouterFunction: RouterFunction = {
     };
 
 export const and = (...rFns: Route[]): Route => {
-    return (request: Request, context: MatchContext): RouterFunction => {
+    return (request: ServerlithRequest, context: MatchContext): RouterFunction => {
         const fn = rFns.find((f) => match(request, f(request, context).match).matched);
         return fn ? fn(request, context) : noopRouterFunction;
     };
