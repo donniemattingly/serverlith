@@ -1,5 +1,5 @@
 import { APIGatewayEvent, APIGatewayProxyResult } from 'aws-lambda';
-import { RequestMiddleware, ResponseMiddleware } from './router/base';
+import { RequestMiddleware, ResponseMiddleware } from './router';
 
 export const corsHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type, Accept, Origin, Referer, User-Agent',

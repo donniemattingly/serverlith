@@ -2,7 +2,7 @@ import {APIGatewayEvent, APIGatewayProxyResult} from 'aws-lambda';
 import * as _ from 'lodash';
 import pathRegexp = require('path-to-regexp');
 import {Key} from 'path-to-regexp';
-import {corsHeaders, eventToRequest, fail, parseBody, Request, Response, responseToApiGatewayResult} from '../http';
+import {corsHeaders, eventToRequest, fail, parseBody, Request, Response, responseToApiGatewayResult} from './http';
 import {and} from "./functional";
 
 export type Route = (request: Request, context: MatchContext) => RouterFunction;
@@ -32,7 +32,7 @@ export const baseContext = {
 const defaultRequestMiddleware: RequestMiddleware[] = [parseBody];
 const defaultResponseMiddleware: ResponseMiddleware[] = [];
 
-export class Base {
+export class Router {
     private verbose = false;
     private routes: Route[] = [];
     private requestMiddleware: RequestMiddleware[] = [...defaultRequestMiddleware];
@@ -57,7 +57,7 @@ export class Base {
         return responseToApiGatewayResult(this.applyResponseMiddleware(response));
     }
 
-    public withLogging(): Base {
+    public withLogging(): Router {
         this.verbose = true;
         return this;
     }
@@ -67,12 +67,12 @@ export class Base {
         return this;
     }
 
-    public registerRequestMiddleware(...requestMiddleware: RequestMiddleware[]): Base {
+    public registerRequestMiddleware(...requestMiddleware: RequestMiddleware[]): Router {
         this.requestMiddleware.push(...requestMiddleware);
         return this;
     }
 
-    public registerResponseMiddleware(...responseMiddleware: ResponseMiddleware[]): Base {
+    public registerResponseMiddleware(...responseMiddleware: ResponseMiddleware[]): Router {
         this.responseMiddleware.push(...responseMiddleware);
         return this;
     }
@@ -86,8 +86,8 @@ export class Base {
     }
 }
 
-export const router = (...routes: Route[]): Base => {
-    return new Base().withRoutes(...routes);
+export const router = (...routes: Route[]): Router => {
+    return new Router().withRoutes(...routes);
 };
 
 // these are modifications of functions from Express's routing

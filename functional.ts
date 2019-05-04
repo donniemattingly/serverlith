@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
-import {fail, notFound, Request} from '../http';
-import {baseContext, HandlerFunction, match, MatchContext, Route, RouterFunction} from './base';
+import {fail, notFound, Request} from './http';
+import {baseContext, HandlerFunction, match, MatchContext, Route, RouterFunction} from './router';
 
 export const route = (context: MatchContext, handler: HandlerFunction): Route => {
     return (request, parentContext) => {
@@ -71,4 +71,4 @@ export const DELETE = (pattern: string, handler: HandlerFunction): Route => {
     return routeMethod('DELETE', pattern, handler);
 };
 
-export * from './base'
+export * from './router'

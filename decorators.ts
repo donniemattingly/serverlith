@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {HandlerFunction, Route} from './base';
+import {HandlerFunction, Route} from './router';
 import {handle, routeMethod} from './functional';
 
 
@@ -90,4 +90,4 @@ const classDecoratorFactory = (params: HandlerParams) => {
 };
 
 
-export * from './base';
+export * from './router';
