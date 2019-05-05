@@ -2,9 +2,12 @@
 
 *Serverless Monoliths*
 
-Serverlith is a TypeScript library for writing REST APIs with AWS Lambda and API Gateway.
-Serverlith handles conversion and routing of AWS API Gateway events received by your lambda 
+Serverlith is a TypeScript library for writing APIs with AWS Lambda and API Gateway more easily.
+Serverlith handles conversion and routing of Amazon API Gateway events received by your lambda 
 function. 
+
+Serverlith operates based off the usage of [proxy resources](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html)
+in Amazon API Gateway to route all possible methods and paths to the same Lambda function.
 
 **Note:** Serverlith is a work in progress and is definitely *not* finished. Please don't use this right now, as
 basically every aspect of the library can change.
@@ -12,8 +15,8 @@ basically every aspect of the library can change.
 
 ## Examples
 
-At the root, you're exporting a handler to give to AWS Lambda as with any function, and you
-register your routes with the Serverlith router.
+The entry point into a Serverlith app is a handler to give to AWS Lambda as with any function, and you
+register your handlers with the Serverlith router.
 
 ```typescript
 export const handler = async (event: APIGatewayEvent) => {
