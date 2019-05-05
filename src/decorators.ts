@@ -5,35 +5,40 @@ import {handle, routeMethod} from './functional';
 
 const metadataKey = Symbol('serverlith-metadata');
 
+interface RouteConfig {
+    path: string;
+    method?: string;
+}
+
 interface RouteDecoratorConfig {
     path: string;
-    method: string;
+    method?: string;
     handlerName: string | symbol;
 }
 
-const routeMethodDecoratorFactory = (path: string, method: string): MethodDecorator => {
+const routeMethodDecoratorFactory = (config: RouteConfig): MethodDecorator => {
     return (target: object, handlerName: string | symbol): void => {
         let handlers: RouteDecoratorConfig[] = Reflect.getMetadata(metadataKey, target);
-        const config = {
+        const decoratorConfig = {
             handlerName,
-            method,
-            path,
+            method: config.method,
+            path: config.path,
         };
 
         if (handlers) {
-            handlers.push(config);
+            handlers.push(decoratorConfig);
         } else {
-            handlers = [config];
+            handlers = [decoratorConfig];
             Reflect.defineMetadata(metadataKey, handlers, target);
         }
     };
 };
 
-export const GET = (path: string): MethodDecorator => routeMethodDecoratorFactory(path, 'GET');
-export const PUT = (path: string): MethodDecorator => routeMethodDecoratorFactory(path, 'PUT');
-export const POST = (path: string): MethodDecorator => routeMethodDecoratorFactory(path, 'POST');
-export const DELETE = (path: string): MethodDecorator => routeMethodDecoratorFactory(path, 'DELETE');
-export const OPTIONS = (path: string): MethodDecorator => routeMethodDecoratorFactory(path, 'OPTIONS');
+export const GET = (config: RouteConfig): MethodDecorator => routeMethodDecoratorFactory({...config, method:'GET'});
+export const PUT = (config: RouteConfig): MethodDecorator => routeMethodDecoratorFactory({...config, method:'PUT'});
+export const POST = (config: RouteConfig): MethodDecorator => routeMethodDecoratorFactory({...config, method:'POST'});
+export const DELETE = (config: RouteConfig): MethodDecorator => routeMethodDecoratorFactory({...config, method:'DELETE'});
+export const OPTIONS = (config: RouteConfig): MethodDecorator => routeMethodDecoratorFactory({...config, method:'OPTIONS'});
 
 function getDecoratedRoutes(origin: any): Route[] {
     const properties: RouteDecoratorConfig[] = Reflect.getMetadata(metadataKey, origin)
@@ -41,7 +46,7 @@ function getDecoratedRoutes(origin: any): Route[] {
     const result: Route[] = [];
     properties.forEach((config) => {
         const handler: HandlerFunction = origin[config.handlerName].bind(origin);
-        result.push(routeMethod(config.method, config.path, handler));
+        result.push(routeMethod(config.method || '', config.path, handler));
     });
     return result;
 }

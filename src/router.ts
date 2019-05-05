@@ -62,6 +62,11 @@ export class Router {
         return this;
     }
 
+    public withHandlers(...handlers: HandlerClass[]) {
+        const routes = handlers.flatMap(h => h.routes);
+        return this.withRoutes(...routes);
+    }
+
     public withRoutes(...routes: Route[]) {
         this.routes = this.routes.concat(routes);
         return this;
@@ -86,8 +91,12 @@ export class Router {
     }
 }
 
-export const router = (...routes: Route[]): Router => {
-    return new Router().withRoutes(...routes);
+interface HandlerClass {
+    routes: Route[];
+}
+
+export const router = (...handlers: HandlerClass[]): Router => {
+    return new Router().withHandlers(...handlers);
 };
 
 // these are modifications of functions from Express's routing
