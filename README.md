@@ -1,5 +1,7 @@
 # Serverlith
 
+[![npm version](https://badge.fury.io/js/serverlith.svg)](https://badge.fury.io/js/serverlith)
+
 *Serverless Monoliths*
 
 Serverlith is a TypeScript library for writing APIs with AWS Lambda and API Gateway more easily.
