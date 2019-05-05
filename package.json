@@ -1,6 +1,6 @@
 {
   "name": "serverlith",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Library for writing REST APIs in AWS Lambda",
   "files": [
     "build/"
@@ -12,7 +12,7 @@
     "build": "npm run clean && tsc -p . && npm run copypackage",
     "publish:local": "cd build && npm link",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copypackage": "cp -rf package.json build"
+    "copypackage": "cp -rf package.json build && cp -rf README.md build"
   },
   "repository": {
     "type": "git",
