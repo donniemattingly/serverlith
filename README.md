@@ -64,6 +64,9 @@ Below we're registering `GET` requests to `/users/:id/` and `POST`s at `/users`
 The methods you decorate should take an argument that extends `Request` and returns one that extends `Response`
 
 ```typescript
+// note importing from serverlith/decorators
+import {GET, Handler, POST,} from "serverlith/decorators"; 
+
 @Handler({path: '/users'})
 export class UserHandler {
 
@@ -86,6 +89,9 @@ export class UserHandler {
 To accomplish the same as above with functional routing:
 
 ```typescript
+// importing from serverlith/functional here
+import {GET, handle, POST} from 'serverlith/functional';
+
 const handler = handle('/users',
     GET('/:id', async (request: Request): Promise<Response> => {
         return fail('not implemented');
