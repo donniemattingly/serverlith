@@ -56,6 +56,9 @@ Choosing which routing style to use is mostly a personal preference - the decora
 around the functional approach. Though the functional approach does enforce correct types, the class based approach
 avoids issues caused by `this` being undefined in the handlers if not bound with `Function.prototype.bind`.
 
+Serverlith uses [path-to-regexp](https://www.npmjs.com/package/path-to-regexp) for routing, so check out that documentation
+for all that's possible.
+
 #### Decorator Based
 
 You decorate a class with `@Handler` to enable routing for methods in the class, and use one of `@GET`, `@PUT`, 
@@ -67,13 +70,16 @@ The methods you decorate should take an argument that extends `Request` and retu
 
 ```typescript
 // note importing from serverlith/decorators
-import {GET, Handler, POST,} from "serverlith/decorators"; 
+import {GET, Handler, POST} from "serverlith/decorators"; 
 
 @Handler({path: '/users'})
 export class UserHandler {
 
     @GET('/:id')
     public getUser(request: Request): Response {
+        
+        // extracting the path parameter 'id'
+        console.log(`user id was: ${request.pathParams['id']}`)
         return fail('not implemented');
     }
 
