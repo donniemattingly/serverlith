@@ -63,7 +63,7 @@ export class Router {
     }
 
     public withHandlers(...handlers: HandlerClass[]) {
-        const routes = handlers.flatMap(h => h.routes);
+        const routes = _.flatMap(handlers, (h => h.routes));
         return this.withRoutes(...routes);
     }
 
