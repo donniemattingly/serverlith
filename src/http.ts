@@ -9,7 +9,7 @@ export const corsHeaders = {
     'Access-Control-Max-Age': 86400,
 };
 
-export const enableCORS: ResponseMiddleware = async (responsePromise: ServerlithResponse | Promise<ServerlithResponse>) => {
+export const enableCORS: ResponseMiddleware = async <T> (responsePromise: ServerlithResponse<T> | Promise<ServerlithResponse<T>>) => {
     const response = await responsePromise;
     return Promise.resolve({
         ...response,
@@ -20,34 +20,30 @@ export const enableCORS: ResponseMiddleware = async (responsePromise: Serverlith
     });
 };
 
-export const parseBody: RequestMiddleware = (request: ServerlithRequest): ServerlithRequest => {
+export const parseBody: RequestMiddleware = <T> (request: ServerlithRequest<T>): ServerlithRequest<T> => {
     return {
         ...request,
         body: typeof request.body === 'string' ? JSON.parse(request.body) : request.body,
     };
 };
 
-export interface ServerlithRequest {
+export interface ServerlithRequest<T> {
     httpMethod: string;
-    body: any;
+    body: T;
     queryParams: any;
     pathParams: any;
     path: string;
 }
 
-export const dummyRequest: ServerlithRequest = {
-    httpMethod: 'GET',
-    queryParams: null,
-    pathParams: null,
-    body: {},
-    path: '/'
-};
 
-export interface ServerlithResponse {
+export interface ServerlithResponse<T> {
     statusCode: string;
     body: any;
     headers: {[name: string]: any};
 }
+
+export type SimpleRequest = ServerlithRequest<object | string>
+export type SimpleResponse = ServerlithResponse<object | string>
 
 const respondWith = () => new ResponseBuilder();
 
@@ -56,8 +52,8 @@ const respondWith = () => new ResponseBuilder();
  * but that's just asking for a confusing slew of nested parentheses
  * once/if the pipeline (|>) operator is accepted, this should change.
  */
-class ResponseBuilder {
-    public response: ServerlithResponse = {
+class ResponseBuilder<T> {
+    public response: ServerlithResponse<T> = {
         statusCode: '500',
         body: {},
         headers: {},
@@ -68,34 +64,34 @@ class ResponseBuilder {
         return this;
     }
 
-    public ok(): ResponseBuilder {
+    public ok(): ResponseBuilder<T> {
         this.response.statusCode = '200';
         return this;
     }
 
-    public created(): ResponseBuilder {
+    public created(): ResponseBuilder<T> {
         this.response.statusCode = '204';
         return this;
     }
 
-    public fail(message: string): ResponseBuilder {
+    public fail(message: string): ResponseBuilder<T> {
         this.response.statusCode = '400';
         this.response.body = {message};
         return this;
     }
 
-    public notFound(): ResponseBuilder {
+    public notFound(): ResponseBuilder<T> {
         this.response.statusCode = '404';
         this.response.body = {message: 'Not Found'};
         return this;
     }
 
-    public header(key: string, value: string): ResponseBuilder {
+    public header(key: string, value: string): ResponseBuilder<T> {
         this.response.headers[key] = value;
         return this;
     }
 
-    public headers(headers: { [name: string]: any }): ResponseBuilder {
+    public headers(headers: { [name: string]: any }): ResponseBuilder<T> {
         this.response.headers = {
             ...this.response.headers,
             ...headers,
@@ -104,7 +100,7 @@ class ResponseBuilder {
         return this;
     }
 
-    public allowingCORS(): ResponseBuilder {
+    public allowingCORS(): ResponseBuilder<T> {
         this.response.headers = {
             ...this.response.headers,
             ...corsHeaders,
@@ -120,10 +116,10 @@ class ResponseBuilder {
 
 }
 
-export const eventToRequest = (event: APIGatewayEvent): ServerlithRequest => {
+export const eventToRequest = <T> (event: APIGatewayEvent): ServerlithRequest<T> => {
     const {body, httpMethod, path, queryStringParameters} = event;
     return {
-        body,
+        body: JSON.parse(body || '') as T,
         httpMethod,
         queryParams: queryStringParameters,
         pathParams: null,
@@ -131,7 +127,7 @@ export const eventToRequest = (event: APIGatewayEvent): ServerlithRequest => {
     };
 };
 
-export const responseToApiGatewayResult = async (responsePromise: ServerlithResponse | Promise<ServerlithResponse>): Promise<APIGatewayProxyResult> => {
+export const responseToApiGatewayResult = async <T> (responsePromise: ServerlithResponse<T> | Promise<ServerlithResponse<T>>): Promise<APIGatewayProxyResult> => {
     const response = await responsePromise;
     return Promise.resolve({
         body: JSON.stringify(response.body),
@@ -140,7 +136,7 @@ export const responseToApiGatewayResult = async (responsePromise: ServerlithResp
     });
 };
 
-export const fail = (message: string, statusCode = '400'): ServerlithResponse => {
+export const fail = (message: string, statusCode = '400'): SimpleResponse => {
     const responseBody = {
         message,
     };
@@ -152,7 +148,7 @@ export const fail = (message: string, statusCode = '400'): ServerlithResponse =>
 
 export const notFound = fail('not found', '404');
 
-export const success = (responseBody: object): ServerlithResponse => {
+export const success = (responseBody: object): SimpleResponse => {
     return respondWith()
         .ok()
         .send(responseBody);

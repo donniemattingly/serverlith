@@ -1,6 +1,6 @@
 {
   "name": "serverlith",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Library for writing REST APIs in AWS Lambda",
   "main": "./build/src/index.js",
   "types": "./build/src/index.d.ts",

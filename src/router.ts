@@ -5,10 +5,10 @@ import {Key} from 'path-to-regexp';
 import {corsHeaders, eventToRequest, fail, parseBody, ServerlithRequest, ServerlithResponse, responseToApiGatewayResult} from './http';
 import {and} from "./functional";
 
-export type Route = (request: ServerlithRequest, context: MatchContext) => RouterFunction;
-export type RequestMiddleware = (request: ServerlithRequest) => ServerlithRequest;
-export type ResponseMiddleware = (response: ServerlithResponse | Promise<ServerlithResponse>) => Promise<ServerlithResponse>;
-export type HandlerFunction = (request: ServerlithRequest) => ServerlithResponse | Promise<ServerlithResponse>;
+export type Route = <T> (request: ServerlithRequest<T>, context: MatchContext) => RouterFunction;
+export type RequestMiddleware =  <T> (request: ServerlithRequest<T>) => ServerlithRequest<T>;
+export type ResponseMiddleware = <T> (response: ServerlithResponse<T> | Promise<ServerlithResponse<T>>) => Promise<ServerlithResponse<T>>;
+export type HandlerFunction = <T> (request: ServerlithRequest<T>) => ServerlithResponse<T> | Promise<ServerlithResponse<T>>;
 
 export interface MatchContext {
     methods: string [];
@@ -45,7 +45,7 @@ export class Router {
         return this.handleRequest(eventToRequest(event));
     }
 
-    public handleRequest(rawRequest: ServerlithRequest): Promise<APIGatewayProxyResult> {
+    public handleRequest <T> (rawRequest: ServerlithRequest<T>): Promise<APIGatewayProxyResult> {
         const request = this.applyRequestMiddleware(rawRequest);
         const route = and(...this.routes)(request, baseContext);
         const matchResult = match(request, route.match);
@@ -82,11 +82,11 @@ export class Router {
         return this;
     }
 
-    private applyRequestMiddleware(request: ServerlithRequest): ServerlithRequest {
+    private applyRequestMiddleware <T> (request: ServerlithRequest<T>): ServerlithRequest<T> {
         return _.flow(this.requestMiddleware)(request);
     }
 
-    private applyResponseMiddleware(response: ServerlithResponse | Promise<ServerlithResponse>): ServerlithResponse | Promise<ServerlithResponse> {
+    private applyResponseMiddleware<T>(response: ServerlithResponse<T> | Promise<ServerlithResponse<T>>): ServerlithResponse<T> | Promise<ServerlithResponse<T>> {
         return _.flow(this.responseMiddleware)(response);
     }
 }
@@ -101,7 +101,7 @@ export const router = (...handlers: HandlerClass[]): Router => {
 
 // these are modifications of functions from Express's routing
 // (https://github.com/expressjs/express/blob/master/lib/router/layer.js)
-export const match = (request: ServerlithRequest, c: MatchContext): MatchResult => {
+export const match = <T> (request: ServerlithRequest<T>, c: MatchContext): MatchResult => {
     let matcher;
     const keys: Key[] = [];
     const regexp = pathRegexp(c.path, keys);

@@ -21,7 +21,7 @@ const compose = (m1: MatchContext, m2: MatchContext): MatchContext => {
 
 export const handle = (pattern: string, ...routerFunctions: Route[]): Route => {
     const context = path(pattern);
-    const newFns = routerFunctions.map((fn) => (r: ServerlithRequest, c: MatchContext) => fn(r, compose(context, c)));
+    const newFns = routerFunctions.map((fn) => <T> (r: ServerlithRequest<T>, c: MatchContext) => fn(r, compose(context, c)));
     return and(...newFns);
 };
 
@@ -31,7 +31,7 @@ const noopRouterFunction: RouterFunction = {
     };
 
 export const and = (...rFns: Route[]): Route => {
-    return (request: ServerlithRequest, context: MatchContext): RouterFunction => {
+    return <T> (request: ServerlithRequest<T>, context: MatchContext): RouterFunction => {
         const fn = rFns.find((f) => match(request, f(request, context).match).matched);
         return fn ? fn(request, context) : noopRouterFunction;
     };
