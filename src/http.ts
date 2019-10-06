@@ -23,7 +23,7 @@ export const enableCORS: ResponseMiddleware = async <T> (responsePromise: Server
 export const parseBody: RequestMiddleware = <T> (request: ServerlithRequest<T>): ServerlithRequest<T> => {
     return {
         ...request,
-        body: typeof request.body === 'string' ? JSON.parse(request.body) : request.body,
+        body: typeof request.body === 'string' && request.body.length > 0 ? JSON.parse(request.body) : request.body,
     };
 };
 
